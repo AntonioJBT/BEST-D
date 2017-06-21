@@ -10,7 +10,7 @@
     :alt: Documentation Status
 
 ################################################
-Project |project_name|
+Project BEST-D molecular analysis
 ################################################
 
 
@@ -20,45 +20,8 @@ Project |project_name|
 .. For a discussion/approach see 
     http://tom.preston-werner.com/2010/08/23/readme-driven-development.html
 
-|project_name| will solve your problem of xxx by doing xxx.
+
+This repository has the code for the BEST-D molecular analysis paper, see:
 
 
-To use
-------
-
-.. code:: 
-    import project
-    # Get your stuff done
-    project.do_stuff()
-
-Features
---------
-
-- Be awesome
-- Make things faster
-
-Installation
-------------
-
-Install |project_name| by running:
-
-.. code::
-    install project
-
-Contribute
-----------
-
-- Issue Tracker: github.com/|project_name|/|project_name|/issues
-- Source Code: github.com/|project_name|/|project_name|
-
-Support
--------
-
-If you are having issues, please let us know.
-We have a mailing list located at: |author_email|
-
-License
--------
-
-The project is licensed under the |license|.
 
