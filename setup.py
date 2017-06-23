@@ -18,10 +18,10 @@ from future import standard_library
 standard_library.install_aliases()
 from setuptools import setup
 
-setup(name='iExplore_iAnswer_super_Project',
+setup(name='BEST-D molecular analysis code',
       version='0.1',
-      description='',
-      url='',
+      description='Code used in the BEST-D molecular analysis paper',
+      url='https://github.com/AntonioJBT/BEST_D',
       author='Antonio J Berlanga-Taylor',
       author_email='a.berlanga at imperial.ac.uk',
       license='GPL-3.0',
