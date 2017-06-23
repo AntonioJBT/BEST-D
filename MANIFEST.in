@@ -31,3 +31,28 @@ include THANKS.txt
 #include *.h
 #include *.pxd
 #include *.c
+
+
+# suggested MANIFEST.in rules:
+include *.py
+include *.rst
+include *.sh
+include *.txt
+include BEST_D_molecular.ini
+include COPYING
+include Dockerfile
+include tox.ini
+
+recursive-include BEST_D_molecular *.R
+recursive-include BEST_D_molecular *.Rscript
+recursive-include BEST_D_molecular *.ipynb
+recursive-include BEST_D_molecular *.pl
+recursive-include BEST_D_molecular *.py
+recursive-include BEST_D_molecular *.sh
+recursive-include BEST_D_molecular *.txt
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include tests *.data
+recursive-include tests *.gold_std
+recursive-include tests *.py
+recursive-include tests *.yaml
