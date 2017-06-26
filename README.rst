@@ -21,7 +21,6 @@ Project BEST-D molecular analysis
     http://tom.preston-werner.com/2010/08/23/readme-driven-development.html
 
 
-This repository has the code for the BEST-D molecular analysis paper, see:
-
+This repository has the code for the BEST-D molecular analysis paper.
 
 
