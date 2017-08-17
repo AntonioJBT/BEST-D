@@ -50,7 +50,7 @@
 ##Set working directory and file locations and names of required inputs:
 
 # Working directory:
-# setwd('~/Desktop/BEST_D.DIR/mac_runs_to_upload/tables_and_plots_for_draft/main_tables/')
+# setwd('~/Documents/quickstart_projects/BEST_D_molecular.p_q/manuscript/main_tables_2/')
 
 #Direct output to file as well as printing to screen (plots aren't redirected though, each done separately). 
 #Input is not echoed to the output file either.
@@ -106,7 +106,7 @@ library(dplyr)
 # pheno_file <- as.character(args[2])
 # pheno_file <- '../../data.dir/BEST-D_phenotype_file_final.tsv'
 
-full_pheno_file <- '../../data.dir/BEST-D_phenotype_file_final_cytokines_and_transcripts.csv'
+full_pheno_file <- '../../data/raw/BEST-D_phenotype_file_final_cytokines_and_transcripts.csv'
 #############################################
 
 
@@ -171,6 +171,11 @@ plyr::count(all_data_reduced$male)
 ###########
 # Generate summaries
 # Main variables
+# Overall mean VD and standard error of the mean at baseline:
+summary(all_data_reduced$vitd0)
+get_sem <- function(i) round(sqrt(var(i, na.rm = TRUE) / length(na.omit(i))), 2)
+get_sem(all_data_reduced$vitd0)
+
 # Functions for mean and SD for main table:
 get_mean <- function(i) round(mean(i, na.rm = TRUE), 2)
 get_sd <- function(i) round(sd(i, na.rm = TRUE), 2)
@@ -377,6 +382,54 @@ print(xtable(main_table_deltas), type = "html", file = 'BESTD_table_deltas.html'
 # Functions:
 # Standard error of the mean:
 get_sem <- function(i) round(sqrt(var(i, na.rm = TRUE) / length(na.omit(i))), 2)
+sem <- get_sem(all_data_reduced$vitd12)
+sem
+sprintf('%s', get_sem(all_data_reduced$vitd12))
+
+get_all_sems <- function(df) {
+  col_name <- c(
+    'Age' = get_sem(df$calendar_age_ra),
+    'BMI' = get_sem(df$bmi0),
+    '25(OH)D baseline' = get_sem(df$vitd0),
+    '25(OH)D 12 months' = get_sem(df$vitd12),
+    'IFNg baseline' = get_sem(df$Ln_IFNgamma0),
+    'IFNg 12 months' = get_sem(df$Ln_IFNgamma12),
+    'IL10 baseline' = get_sem(df$Ln_IL10_0),
+    'IL10 12 months' = get_sem(df$Ln_IL10_12),
+    'IL6 baseline' = get_sem(df$Ln_IL6_0),
+    'IL6 12 months' = get_sem(df$Ln_IL6_12),
+    'IL8 baseline' = get_sem(df$Ln_IL8_0),
+    'IL8 12 months' = get_sem(df$Ln_IL8_12),
+    'TNFa baseline' = get_sem(df$Ln_TNFalpha0),
+    'TNFa 12 months' = get_sem(df$Ln_TNFalpha12),
+    'IFNg baseline (mRNA)' = get_sem(df$transcript_IFNG_baseline),
+    'IFNg 12 months (mRNA)' = get_sem(df$transcript_IFNG_12months),
+    'IL10 baseline (mRNA)' = get_sem(df$transcript_IL10_baseline),
+    'IL10 12 months (mRNA)' = get_sem(df$transcript_IL10_12months),
+    'IL6 baseline (mRNA)' = get_sem(df$transcript_IL6_baseline),
+    'IL6 12 months (mRNA)' = get_sem(df$transcript_IL6_12months),
+    'IL8 baseline (mRNA)' = get_sem(df$transcript_IL8_baseline),
+    'IL8 12 months (mRNA)' = get_sem(df$transcript_IL8_12months),
+    'TNFa baseline (mRNA)' = get_sem(df$transcript_TNF_baseline),
+    'TNFa 12 months (mRNA)' = get_sem(df$transcript_TNF_12months)
+  )
+  as_df <- as.data.frame(col_name)
+  return(as_df)
+}
+
+main_table_2_sem <- data.frame(get_all_sems(all_data_reduced[which(all_data_reduced$arm == 'Placebo'), ]),
+                               get_all_sems(all_data_reduced[which(all_data_reduced$arm == '2000 IU'), ]),
+                               get_all_sems(all_data_reduced[which(all_data_reduced$arm == '4000 IU'), ])
+)
+colnames(main_table_2_sem) <- c('Placebo (SEM)', '2000 IU (SEM)', '4000 IU (SEM)')
+# View(main_table_2_sem)
+
+# Save table to file:
+print(xtable(main_table_2_sem), type = "html", file = 'BESTD_table_sem.html')
+############
+
+############
+# Add 95% CIs of the mean in separate table
 # 95% CIs of the mean:
 get_ci95 <- function(i) c(round(mean(i, na.rm = TRUE) - 2 * sem, 2), round(mean(i, na.rm = TRUE) + 2 * sem, 2))
 get_ci95up <- function(i) round((mean(i, na.rm = TRUE) + 2 * sem), 2)
@@ -391,60 +444,60 @@ ci95
 ci95low
 ci95up
 
-nice_print <- sprintf('%s (%s, %s)', sem, ci95low, ci95up)
+nice_print <- sprintf('%s, %s', ci95low, ci95up)
 nice_print
 
-get_sem_ci95 <- function(i) {
-  sem <- get_sem(i)
+# nice_print <- sprintf('%s', get_sem(all_data_reduced$vitd0))
+
+get_ci95s <- function(i) {
   ci95up <- get_ci95up(i)
   ci95low <- get_ci95low(i)
-  nice_print <- sprintf('%s (%s, %s)', sem, ci95low, ci95up)
+  nice_print <- sprintf('%s, %s', ci95low, ci95up)
   return(nice_print)
 }
-get_sem_ci95(all_data_reduced$vitd0)
-############
+get_ci95s(all_data_reduced$vitd0)
 
-############
-get_all_sems <- function(df) {
+
+get_all_CIs <- function(df) {
   col_name <- c(
-    'Age' = get_sem_ci95(df$calendar_age_ra),
-    'BMI' = get_sem_ci95(df$bmi0),
-    '25(OH)D baseline' = get_sem_ci95(df$vitd0),
-    '25(OH)D 12 months' = get_sem_ci95(df$vitd12),
-    'IFNg baseline' = get_sem_ci95(df$Ln_IFNgamma0),
-    'IFNg 12 months' = get_sem_ci95(df$Ln_IFNgamma12),
-    'IL10 baseline' = get_sem_ci95(df$Ln_IL10_0),
-    'IL10 12 months' = get_sem_ci95(df$Ln_IL10_12),
-    'IL6 baseline' = get_sem_ci95(df$Ln_IL6_0),
-    'IL6 12 months' = get_sem_ci95(df$Ln_IL6_12),
-    'IL8 baseline' = get_sem_ci95(df$Ln_IL8_0),
-    'IL8 12 months' = get_sem_ci95(df$Ln_IL8_12),
-    'TNFa baseline' = get_sem_ci95(df$Ln_TNFalpha0),
-    'TNFa 12 months' = get_sem_ci95(df$Ln_TNFalpha12),
-    'IFNg baseline (mRNA)' = get_sem_ci95(df$transcript_IFNG_baseline),
-    'IFNg 12 months (mRNA)' = get_sem_ci95(df$transcript_IFNG_12months),
-    'IL10 baseline (mRNA)' = get_sem_ci95(df$transcript_IL10_baseline),
-    'IL10 12 months (mRNA)' = get_sem_ci95(df$transcript_IL10_12months),
-    'IL6 baseline (mRNA)' = get_sem_ci95(df$transcript_IL6_baseline),
-    'IL6 12 months (mRNA)' = get_sem_ci95(df$transcript_IL6_12months),
-    'IL8 baseline (mRNA)' = get_sem_ci95(df$transcript_IL8_baseline),
-    'IL8 12 months (mRNA)' = get_sem_ci95(df$transcript_IL8_12months),
-    'TNFa baseline (mRNA)' = get_sem_ci95(df$transcript_TNF_baseline),
-    'TNFa 12 months (mRNA)' = get_sem_ci95(df$transcript_TNF_12months)
+    'Age' = get_ci95s(df$calendar_age_ra),
+    'BMI' = get_ci95s(df$bmi0),
+    '25(OH)D baseline' = get_ci95s(df$vitd0),
+    '25(OH)D 12 months' = get_ci95s(df$vitd12),
+    'IFNg baseline' = get_ci95s(df$Ln_IFNgamma0),
+    'IFNg 12 months' = get_ci95s(df$Ln_IFNgamma12),
+    'IL10 baseline' = get_ci95s(df$Ln_IL10_0),
+    'IL10 12 months' = get_ci95s(df$Ln_IL10_12),
+    'IL6 baseline' = get_ci95s(df$Ln_IL6_0),
+    'IL6 12 months' = get_ci95s(df$Ln_IL6_12),
+    'IL8 baseline' = get_ci95s(df$Ln_IL8_0),
+    'IL8 12 months' = get_ci95s(df$Ln_IL8_12),
+    'TNFa baseline' = get_ci95s(df$Ln_TNFalpha0),
+    'TNFa 12 months' = get_ci95s(df$Ln_TNFalpha12),
+    'IFNg baseline (mRNA)' = get_ci95s(df$transcript_IFNG_baseline),
+    'IFNg 12 months (mRNA)' = get_ci95s(df$transcript_IFNG_12months),
+    'IL10 baseline (mRNA)' = get_ci95s(df$transcript_IL10_baseline),
+    'IL10 12 months (mRNA)' = get_ci95s(df$transcript_IL10_12months),
+    'IL6 baseline (mRNA)' = get_ci95s(df$transcript_IL6_baseline),
+    'IL6 12 months (mRNA)' = get_ci95s(df$transcript_IL6_12months),
+    'IL8 baseline (mRNA)' = get_ci95s(df$transcript_IL8_baseline),
+    'IL8 12 months (mRNA)' = get_ci95s(df$transcript_IL8_12months),
+    'TNFa baseline (mRNA)' = get_ci95s(df$transcript_TNF_baseline),
+    'TNFa 12 months (mRNA)' = get_ci95s(df$transcript_TNF_12months)
   )
   as_df <- as.data.frame(col_name)
   return(as_df)
 }
 
-main_table_2_sem <- data.frame(get_all_sems(all_data_reduced[which(all_data_reduced$arm == 'Placebo'), ]),
-                               get_all_sems(all_data_reduced[which(all_data_reduced$arm == '2000 IU'), ]),
-                               get_all_sems(all_data_reduced[which(all_data_reduced$arm == '4000 IU'), ])
+main_table_2_95CIs <- data.frame(get_all_CIs(all_data_reduced[which(all_data_reduced$arm == 'Placebo'), ]),
+                               get_all_CIs(all_data_reduced[which(all_data_reduced$arm == '2000 IU'), ]),
+                               get_all_CIs(all_data_reduced[which(all_data_reduced$arm == '4000 IU'), ])
 )
-colnames(main_table_2_sem) <- c('Placebo (SEM, CI95)', '2000 IU (SEM, CI95)', '4000 IU (SEM, CI95)')
-# View(main_table_2_sem)
+colnames(main_table_2_95CIs) <- c('Placebo (Upper, Lower 95% CI)', '2000 IU (Upper, Lower 95% CI)', '4000 IU (Upper, Lower 95% CI)')
+# View(main_table_2_95CIs)
 
 # Save table to file:
-print(xtable(main_table_2_sem), type = "html", file = 'BESTD_table_sem_CI95.html')
+print(xtable(main_table_2_sem), type = "html", file = 'BESTD_table_sem.html')
 ############
 
 ############
@@ -500,9 +553,12 @@ main_table_2$ID  <- 1:nrow(main_table_2)
 # Set common column name:
 main_table_2$variable <- rownames(main_table_2)
 main_table_2_sem$variable <- rownames(main_table_2_sem)
+main_table_2_95CIs$variable <- rownames(main_table_2_95CIs)
 main_table_deltas$variable <- rownames(main_table_deltas)
 main_table_2_pvalues$variable <- rownames(main_table_2_pvalues)
+
 main_table_merged <- merge(main_table_2, main_table_2_sem, by = 'variable', all = TRUE, sort = FALSE)
+main_table_merged <- merge(main_table_merged, main_table_2_95CIs, by = 'variable', all = TRUE, sort = FALSE)
 main_table_merged <- merge(main_table_merged, main_table_deltas, by = 'variable', all = TRUE, sort = FALSE)
 main_table_merged <- merge(main_table_merged, main_table_2_pvalues, by = 'variable', all = TRUE, sort = FALSE)
 
@@ -527,7 +583,7 @@ write.table(main_table_merged,
 #############################################
 # Save some text:
 title_main_table_merged <- paste(
-  'Table 1. Baseline and 12 month values following vitamin D supplementation.',
+  'Table 1: Basic characteristics, baseline and 12 month values following vitamin D supplementation.',
                                  sep = ''
   )
 cat(file = 'title_BESTD_table_merged.tsv', title_main_table_merged, 
