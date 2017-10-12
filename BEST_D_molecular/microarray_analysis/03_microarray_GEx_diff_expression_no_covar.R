@@ -11,7 +11,7 @@
 
 # Working directory:
 # setwd("/ifs/projects/proj043/analysis.dir/gene_expression_3.dir")
-# setwd('/Users/antoniob/Desktop/BEST_D.DIR/mac_runs_to_upload/data.dir/')
+# setwd('/Users/antoniob/Documents/quickstart_projects/BEST_D_molecular.p_q/results/repro_re_runs/')
 
 #Direct output to file as well as printing to screen (plots aren't redirected though, each done separately). 
 #Input is not echoed to the output file either.
@@ -32,7 +32,7 @@ print(paste('Working directory :', getwd()))
 # Load results from 02_microarrayxxx file, saved as RData object:
 # Re-load a previous R session, data and objects:
 #load('R_session_saved_image_probe_filtering.RData', verbose=T)
-load('R_session_saved_image_pheno_file_check.RData', verbose=T)
+load('../../data/raw/R_session_saved_image_pheno_file_check.RData')
 #load('R_session_saved_image_diff_expression_3.RData', verbose=T)
 # load('R_session_saved_image_diff_expression.RData', verbose=T)
 

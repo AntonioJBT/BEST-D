@@ -105,7 +105,7 @@ abline(coef = c(0, 1))
 # 
 # Together with SF7 plot (histograms of raw p-values) it would seem that drug response
 # is heterogeneic but effects are small and compared to placebo non-significant.
-# If their is higher variance than expecter, more samples would be required to detect differences.
+# If their is higher variance than expected, more samples would be required to detect differences.
 #########
 ###########################
 

@@ -100,6 +100,7 @@
 
 # Working directory:
 #setwd("/ifs/projects/proj043/analysis.dir/gene_expression.dir")
+# setwd('/Users/antoniob/Documents/quickstart_projects/BEST_D_molecular.p_q/results/repro_re_runs/')
 
 #Direct output to file as well as printing to screen (plots aren't redirected though, each done separately). 
 #Input is not echoed to the output file either.
@@ -116,13 +117,11 @@ Sys.time()
 print(paste('Working directory :', getwd()))
 
 # Load previous session if needed:
-# load(file='R_session_saved_image_read_and_QC_full.RData', verbose=TRUE)
+# load('../../data/raw/R_session_saved_image_read_and_QC_full.RData')
 
 # Filename to save current R session, data and objects at the end:
 R_session_saved_image <- paste('R_session_saved_image_read_and_QC', '.RData', sep='')
 R_session_saved_image_full <- paste('R_session_saved_image_read_and_QC_full', '.RData', sep='')
-
-
 #############################
 
 
@@ -145,7 +144,8 @@ library(Biobase)
 library(quantro)
 library(lumiHumanAll.db)
 library(plyr)
-
+library(ggplot2)
+library(cowplot)
 #############################
 
 # 1) Data acquisition:
