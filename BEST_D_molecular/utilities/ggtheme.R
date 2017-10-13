@@ -6,6 +6,11 @@
 # https://stackoverflow.com/questions/31404433/is-there-an-elegant-way-of-having-uniform-font-size-for-the-whole-plot-in-ggplot
 # If re-using functions it is much better to copy this to a new script and run here as:
 # source('my_ggplot_theme.R')
+
+# A4 paper measures 210 × 297 millimeters or 8.27 × 11.69 inches
+######################
+
+######################
 theme_my <- function(base_size = 11, base_family = "Times") {
   normal_text <- element_text(size = as.numeric(base_size), colour = "black", face = "plain")
   large_text <- element_text(size = as.numeric(base_size + 1), colour = "black", face = "plain")
