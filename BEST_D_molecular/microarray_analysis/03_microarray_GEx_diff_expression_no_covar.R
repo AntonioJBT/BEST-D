@@ -34,7 +34,7 @@ print(paste('Working directory :', getwd()))
 #load('R_session_saved_image_probe_filtering.RData', verbose=T)
 load('../../data/raw/R_session_saved_image_pheno_file_check.RData')
 #load('R_session_saved_image_diff_expression_3.RData', verbose=T)
-# load('R_session_saved_image_diff_expression.RData', verbose=T)
+# load('../../data/raw/R_session_saved_image_diff_expression.RData', verbose=T)
 
 # For test without SNP filter:
 # load('R_session_saved_image_pheno_file_check_noSNP_filter.RData', verbose=T)
@@ -61,12 +61,14 @@ library(ellipse)
 library(Hmisc)
 library(splines)
 library(statmod)
+library(cowplot)
 
 # Get functions from other scripts (eg to add annotations to topTable results):
 source('/ifs/devel/antoniob/projects/BEST-D/gene_expression_functions.R')
 source('/ifs/devel/antoniob/projects/BEST-D/moveme.R')
 # source('/Users/antoniob/Documents/github.dir/AntonioJBT/cgat_projects/BEST-D/microarray_analysis/gene_expression_functions.R')
 # source('/Users/antoniob/Documents/github.dir/AntonioJBT/cgat_projects/utility_tutorial_scripts//moveme.R')
+source('../../code/BEST_D_molecular/utilities/ggtheme.R')
 #############################
 
 
@@ -439,17 +441,21 @@ dev.off()
 hist1 <- ggplot(topTable_fit2_UI4000minusplacebo, aes(x = P.Value)) + 
   geom_histogram() +
   labs(title = 'Differential gene expression: 4000 IU') +
-  theme(text = element_text(size=12)) +
-  theme_gray()
+  theme_Publication() +
+  theme(panel.grid.major = element_line(colour = "#f0f0f0"),
+        panel.grid.minor = element_line(colour = "#f0f0f0"))
 
 hist2 <- ggplot(topTable_fit2_UI2000minusplacebo, aes(x = P.Value)) + 
   geom_histogram() +
   labs(title = 'Differential gene expression: 2000 IU') +
-  theme(text = element_text(size=12)) +
-  theme_gray()
+  theme_Publication() +
+  theme(panel.grid.major = element_line(colour = "#f0f0f0"),
+        panel.grid.minor = element_line(colour = "#f0f0f0"))
 
-ggsave(filename = 'pval_diff_in_diff_GEx.png', grid.arrange(hist1, hist2, ncol = 1))
-
+hists <- plot_grid(hist1, hist2,
+                   ncol = 1)
+ggsave(filename = 'pval_diff_in_diff_GEx.svg', hists)
+# dev.off()
 
 
 # Basic volcano plot

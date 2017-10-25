@@ -54,7 +54,7 @@
 ##Set working directory and file locations and names of required inputs:
 
 # Working directory:
-# setwd('~/Desktop/BEST_D.DIR/mac_runs_to_upload/BEST-D_cytokines/')
+# setwd('/Users/antoniob/Documents/quickstart_projects/BEST_D_molecular.p_q/results/repro_re_runs/')
 
 #Direct output to file as well as printing to screen (plots aren't redirected though, each done separately). 
 #Input is not echoed to the output file either.
@@ -75,7 +75,7 @@ getwd()
 ##TO DO extract parameters:
 
 # Re-load a previous R session, data and objects:
-# load('../data.dir/R_session_saved_image_cytokines.RData', verbose=T)
+# load('../../data/raw/R_session_saved_image_cytokines_lm.RData', verbose=T)
 
 # Filename to save current R session, data and objects at the end:
 R_session_saved_image <- paste('R_session_saved_image_cytokines','.RData', sep='')
@@ -106,6 +106,11 @@ library(gridExtra)
 library(reshape2)
 library(plyr)
 library(dplyr)
+
+# Utility tools:
+# source('../../code/BEST_D_molecular/utilities/moveme.R')
+# source('../../code/BEST_D_molecular/utilities/gene_expression_functions.R')
+source('../../code/BEST_D_molecular/utilities/ggtheme.R')
 #############################
 
 
@@ -113,24 +118,25 @@ library(dplyr)
 # Set-up arguments:
 
 cyto_file <- as.character(args[1])
-cyto_file <- '../data.dir/bestd_cytokines.csv'
+cyto_file <- '../../data/raw/bestd_cytokines.csv'
 
 # See script 
 # /cgat_projects/BEST-D/genotype_analysis/plink_output_processing.R
 geno_file <- as.character(args[2])
-# e.g. 'rs1993116_plink_results.raw'
+# 'rs7041_plink_results.raw'
+# 'rs1993116_plink_results.raw'
 # geno_file <- ''
 
 # See /Users/antoniob/Documents/github.dir/AntonioJBT/Airwave/eQTL_plotting_airwave.R
 expr_file <- as.character(args[3])
-expr_file <- '../data.dir/normalised_filtered_annotated.tab'
+expr_file <- '../../data/raw/normalised_filtered_annotated.tab'
 
 pheno_file <- as.character(args[4])
-pheno_file <- '../data.dir/BEST-D_phenotype_file_final.tsv'
+pheno_file <- '../../data/raw/BEST-D_phenotype_file_final.tsv'
 
 # Probe annotation file to get corresponding info for genes:
 illumina_file <- as.character(args[5])
-illumina_file <- '../annotation_external/HumanHT-12_V4_0_R2_15002873_B.txt'
+illumina_file <- '../../data/external/annotation_external/HumanHT-12_V4_0_R2_15002873_B.txt'
 
 # Genes of interest:
 genes <- list('IFNG', 'IL6', 'IL8', 'IL10', 'TNF')
@@ -279,7 +285,7 @@ for (i in transcript_info$Probe_Id) {
 # Check probe filtering script steps in:
 # '02a_microarray_GEx_normalisation_probe_filtering_sex.R'
 # The object 'normalised_filtered_annotated' contains all probes without the SNP filter from this RData file"
-load('../data.dir/R_session_saved_image_probe_filtering_full_noSNP_filter.RData', verbose=T)
+load('../../data/raw/R_session_saved_image_probe_filtering_full_noSNP_filter.RData', verbose=T)
 
 which(transcript_info$Probe_Id %in% rownames(normalised_filtered_annotated))
 transcript_info
@@ -498,11 +504,11 @@ ggplot(data = as.data.frame(all_data_melt_cyto),
   geom_boxplot(position = position_dodge(1), outlier.alpha = 0.7) +
   labs(title = '', y = 'Circulating protein levels (natural logarithm)', x = '') +
   scale_color_brewer(palette = "Dark2") +
-  theme_gray() +
+  theme_Publication() +
   theme(legend.title=element_blank(),
         axis.text.x = element_text(angle=90, vjust = 0.5),
         plot.title = element_text(hjust = 0.5))
-ggsave('cytokine_boxplots.png')
+ggsave('cytokine_boxplots.svg')
 #########
 
 #########
@@ -527,11 +533,12 @@ class(cormat_melted)
 ggplot(data = cormat_melted, aes(x = Var1, y = Var2, fill = value)) + 
   geom_tile() +
   labs(title = 'Circulating cytokines', y = '', x = '') +
+  theme_Publication() +
   theme(axis.text.x = element_text(angle=90, vjust = 0.5),
         plot.title = element_text(hjust = 0.5)
         # legend.title = element_text('Spearman rho')
         )
-ggsave('cytokines_heatmap.png')
+ggsave('cytokines_heatmap.svg')
 #########
 
 #########
@@ -730,8 +737,9 @@ gg_heatmap <- function(data_cormat_melted) {
   scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
                        midpoint = 0, limit = c(-1, 1), space = "Lab", 
                        name = "Pearson correlation (colour scale)\nand unadjusted P-values (numbers)") +
-  labs(title = 'Circulating cytokines and 25(OH)D by arm and timepoint', y = '', x = '') +
+  # labs(title = 'Circulating cytokines and 25(OH)D by arm and timepoint', y = '', x = '') +
   # theme_minimal() +
+  theme_Publication() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5),
         plot.title = element_text(hjust = 0.5)
   ) +
@@ -779,28 +787,31 @@ gg_heatmap(cormat_melted_triangle_P) # For testing
 cormat_melted_triangle$value <- round(cormat_melted_triangle$value, 2)
 cormat_melted_triangle_P$value <- round(cormat_melted_triangle_P$value, 2)
 # View(cormat_melted_triangle_P)
-gg_heatmap(cormat_melted_triangle) + 
-  # geom_text(aes(Var2, Var1, label = value),
-  #           color = "black", size = 3) +
-  # Write p-values instead:
-  geom_text(data = cormat_melted_triangle_P,
-            aes(Var2, Var1, label = value),
-            color = "black", size = 3) +
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.grid.major = element_blank(),
-    panel.border = element_blank(),
-    panel.background = element_rect(),
-    axis.ticks = element_blank(),
-    legend.justification = c(1, 0),
-    legend.position = c(0.5, 0.8),
-    legend.direction = "horizontal") +
-  guides(fill = guide_colorbar(barwidth = 12, barheight = 2,
-                               title.position = "top", title.hjust = 0.5)) #+
-  # theme(text = element_text(size = 12))
-ggsave('cytokines_heatmap_vitd_by_arm_nicer.pdf', width = 13, height = 13)
-dev.off()
+
+# Final plot:
+gg_heatmap_final <- gg_heatmap(cormat_melted_triangle) + 
+                    theme_Publication() +
+                    # geom_text(aes(Var2, Var1, label = value),
+                              #           color = "black", size = 3) +
+                              # Write p-values instead:
+                    geom_text(data = cormat_melted_triangle_P,
+                              aes(Var2, Var1, label = value),
+                              color = "black", size = 3) +
+                    theme(axis.title.x = element_blank(),
+                          axis.text.x = element_text(angle = 90),
+                          axis.title.y = element_blank(),
+                          panel.grid.major = element_blank(),
+                          panel.border = element_blank(),
+                          panel.background = element_rect(),
+                          axis.ticks = element_blank(),
+                          legend.justification = c(1, 0),
+                          legend.position = c(0.5, 0.8),
+                          legend.direction = "horizontal") +
+                    guides(fill = guide_colorbar(barwidth = 12, barheight = 2,
+                                                 title.position = "top", title.hjust = 0.5))
+gg_heatmap_final
+ggsave('cytokines_heatmap_vitd_by_arm.svg', height = 12, width = 12, units = 'in')
+# dev.off()
 #########
 
 #########
@@ -887,12 +898,12 @@ ggplot(data = as.data.frame(all_data_melt_gex),
   geom_boxplot(position = position_dodge(1), outlier.alpha = 0.7) +
   labs(title = '', y = 'Transcript levels (VSN normalised, pre-SNP filtering)', x = '') +
   scale_color_brewer(palette = "Dark2") +
-  theme_gray() +
+  theme_Publication() +
   theme(text = element_text(size = 14), 
         legend.title=element_blank(),
         axis.text.x = element_text(angle=90, vjust = 0.5)
         )
-ggsave('cytokine_transcripts_boxplots.png', width = 10, height = 10)
+ggsave('cytokine_transcripts_boxplots.svg') #, width = 10, height = 10)
 #########
 
 
@@ -905,7 +916,7 @@ transcripts <-
   geom_boxplot(position = position_dodge(1), outlier.alpha = 0.7) +
   labs(title = '', y = 'Gene expression levels (VSN normalised)', x = '') +
   scale_color_brewer(palette = "Dark2") +
-  theme_gray() +
+  theme_Publication() +
   theme(text = element_text(size = 14), 
         legend.title=element_blank(),
         axis.text.x = element_blank(),
@@ -915,7 +926,13 @@ transcripts <-
         # legend.position = 'bottom'
         # axis.text.x = element_text(angle=90, vjust = 0.5)
         )
+# Add a border and whatever else:
+transcripts <- transcripts +
+               panel_border(colour = 'black', size = 1) +
+               theme(panel.grid.major = element_line(colour = "#f0f0f0"),
+                     axis.line.x = element_blank())
 
+# Do cytokine levels:
 cytokines <-
   ggplot(data = as.data.frame(all_data_melt_cyto),
          aes(x = group_cyto, y = value, fill = group_cyto)) +
@@ -923,7 +940,7 @@ cytokines <-
   geom_boxplot(position = position_dodge(1), outlier.alpha = 0.7) +
   labs(title = '', y = 'Circulating levels (natural logarithm)', x = '') +
   scale_color_brewer(palette = "Dark2") +
-  theme_gray() +
+  theme_Publication() +
   theme(text = element_text(size = 14), 
         legend.title=element_blank(),
         axis.text.x = element_blank(),
@@ -932,9 +949,28 @@ cytokines <-
         strip.text.x = element_blank()
         # axis.text.x = element_text(angle=90, vjust = 0.5)
         )
-plots <- arrangeGrob(transcripts, cytokines, nrow = 2)
-ggsave('boxplots_cytokine_and_transcripts.png', 
-       plots, height = 10, width = 12)
+# Add a border and whatever else:
+cytokines <- cytokines +
+             panel_border(colour = 'black', size = 1) +
+             theme(panel.grid.major = element_line(colour = "#f0f0f0"),
+                   axis.line.x = element_blank())
+
+# Put plots together:
+# plots <- arrangeGrob(transcripts, cytokines, nrow = 2)
+# use cowplot:
+library(cowplot)
+plots <- plot_grid(transcripts, cytokines,
+                    nrow = 2,
+                    # align = 'vh',
+                    labels = c("A", "B")
+                    # rel_widths = c(1, 0.05, 1)
+                    )
+# A4 paper measures 210 × 297 millimeters or 8.27 × 11.69 inches
+plot_name <- 'boxplots_cytokine_and_transcripts.svg'
+svg(plot_name, width = 12, height = 10)
+plots
+dev.off()
+# ggsave('boxplots_cytokine_and_transcripts.svg', plots, width = 12, height = 10, units = 'in')
 #########
 
 
@@ -956,10 +992,10 @@ ggplot(data = as.data.frame(all_data_IL10),
   geom_boxplot(position = position_dodge(1), outlier.alpha = 0.7) +
   labs(title = '', y = 'Circulating protein levels (natural logarithm)', x = '') +
   scale_color_brewer(palette = "Dark2") +
-  theme_gray() +
+  theme_Publication() +
   theme(legend.title=element_blank(),
         plot.title = element_text(hjust = 0.5))
-ggsave('IL10_boxplots.png')
+ggsave('IL10_boxplots.svg')
 #########
 
 #########
@@ -979,16 +1015,16 @@ ggplot(data = as.data.frame(all_data_gex),
   geom_boxplot(position = position_dodge(1), outlier.alpha = 0.7) +
   labs(title = '', y = 'VSN normalised gene expression levels', x = '') +
   scale_color_brewer(palette = "Dark2") +
-  theme_gray() +
+  theme_Publication() +
   theme(legend.title=element_blank(),
         plot.title = element_text(hjust = 0.5))
-ggsave('IL10_transcripts_boxplots.png')
+ggsave('IL10_transcripts_boxplots.svg')
 #########
 #############################################
 
 #############################################
 # Save csv file with transcripts info to merge later with pheno and cyto data:
-write.csv(all_data, '../data.dir/BEST-D_phenotype_file_final_cytokines_and_transcripts.csv', quote = FALSE, na = 'NA')
+write.csv(all_data, '../../data/raw/BEST-D_phenotype_file_final_cytokines_and_transcripts.csv', quote = FALSE, na = 'NA')
 #############################################
 
 #############################################

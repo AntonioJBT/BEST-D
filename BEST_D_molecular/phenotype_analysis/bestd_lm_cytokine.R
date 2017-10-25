@@ -56,7 +56,7 @@
 ##Set working directory and file locations and names of required inputs:
 
 # Working directory:
-# setwd('~/Desktop/BEST_D.DIR/mac_runs_to_upload/BEST-D_cytokines/')
+# setwd('/Users/antoniob/Documents/quickstart_projects/BEST_D_molecular.p_q/results/repro_re_runs/')
 
 #Direct output to file as well as printing to screen (plots aren't redirected though, each done separately). 
 #Input is not echoed to the output file either.
@@ -77,7 +77,7 @@ getwd()
 ##TO DO extract parameters:
 
 # Re-load a previous R session, data and objects:
-# load('../data.dir/R_session_saved_image_cytokines_lm.RData', verbose=T)
+# load('../../data/raw/R_session_saved_image_cytokines_lm.RData', verbose=T)
 
 # Filename to save current R session, data and objects at the end:
 R_session_saved_image <- paste('R_session_saved_image_cytokines_lm','.RData', sep='')
@@ -105,20 +105,23 @@ library(lattice)
 library(mice)
 library(VIM)
 library(miceadds)
+# library(cowplot)
 # library(car)
 # library(gvlma)
 # library(biglm)
 # library(glmulti)
+
+source('../../code/BEST_D_molecular/utilities/ggtheme.R')
 #############################
 
 
 #############################################
 # Set-up arguments:
 cyto_file <- as.character(args[1])
-cyto_file <- '../data.dir/bestd_cytokines.csv'
+# cyto_file <- '../data.dir/bestd_cytokines.csv'
 
 pheno_file <- as.character(args[4])
-pheno_file <- '../data.dir/BEST-D_phenotype_file_final.tsv'
+# pheno_file <- '../data.dir/BEST-D_phenotype_file_final.tsv'
 #############################################
 
 
@@ -393,7 +396,7 @@ ggsave('scatterplot_IL10_and_VD.png', plots, height = 10, width = 12)
 ##########
 
 ##########
-# Function to plot all cytkones:
+# Function to plot all cytokines:
 scatter_plot_cyto <- function(df, y_base, y_final, 
                               x_base, x_final, 
                               group, 
@@ -498,21 +501,22 @@ g_legend <- function(a.gplot) {
   return(legend)
   }
 legend <- g_legend(my_plot)
-# Plot in one figure:
-grid.arrange(grobs = all_plots, ncol = length(cytokines_0)) # Pass explicitely as a 'grob'
+# Plot in one figure, test:
+grid.arrange(grobs = all_plots, ncol = length(cytokines_0))
 # https://stackoverflow.com/questions/38867430/add-labels-to-a-plot-made-by-grid-arrange-from-multiple-plots
+
 # Plot legend, y-axis:
-plots_y_axis <- arrangeGrob(grobs = all_plots,
+plots_y_axis <- arrangeGrob(grobs = all_plots, theme_Publication(),
                      ncol = length(cytokines_0),
                      left = textGrob("Circulating protein levels (natural logarithm)",
-                                     rot = 90, vjust = 1, gp = gpar(fontsize = 30)))
+                                     rot = 90, vjust = 1, gp = gpar(fontsize = 30))
+                     )
 plots_legend <- grid.arrange(plots_y_axis, legend,
                              nrow = 2,
                              heights = c(5, 0.2))
-
 # grid.newpage()
 # Save to file:
-ggsave('scatterplots_cytokines_and_VD.png', plots_legend, height = 15, width = 24)
+ggsave('scatterplots_cytokines_and_VD.svg', plots_legend, height = 15, width = 24, units = 'in')
 ##########
 #############################################
 
