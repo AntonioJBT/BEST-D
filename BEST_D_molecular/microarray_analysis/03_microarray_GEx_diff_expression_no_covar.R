@@ -36,6 +36,11 @@ load('../../data/raw/R_session_saved_image_pheno_file_check.RData')
 #load('R_session_saved_image_diff_expression_3.RData', verbose=T)
 # load('../../data/raw/R_session_saved_image_diff_expression.RData', verbose=T)
 
+# If plotting quantile normalisation data (neqc), load:
+# load('R_session_saved_image_normalisation_NEQC.RData', verbose=T)
+# where the object 'normalised' is run_neqc with probe and pheno file processing up to this file.
+# This is for the pval_plots of SF7
+
 # For test without SNP filter:
 # load('R_session_saved_image_pheno_file_check_noSNP_filter.RData', verbose=T)
 
@@ -64,10 +69,10 @@ library(statmod)
 library(cowplot)
 
 # Get functions from other scripts (eg to add annotations to topTable results):
-source('/ifs/devel/antoniob/projects/BEST-D/gene_expression_functions.R')
-source('/ifs/devel/antoniob/projects/BEST-D/moveme.R')
-# source('/Users/antoniob/Documents/github.dir/AntonioJBT/cgat_projects/BEST-D/microarray_analysis/gene_expression_functions.R')
-# source('/Users/antoniob/Documents/github.dir/AntonioJBT/cgat_projects/utility_tutorial_scripts//moveme.R')
+# source('/ifs/devel/antoniob/projects/BEST-D/gene_expression_functions.R')
+# source('/ifs/devel/antoniob/projects/BEST-D/moveme.R')
+source('../../code/BEST_D_molecular/utilities/moveme.R')
+source('../../code/BEST_D_molecular/utilities/gene_expression_functions.R')
 source('../../code/BEST_D_molecular/utilities/ggtheme.R')
 #############################
 
@@ -867,16 +872,19 @@ dev.off()
 hist1 <- ggplot(topTable_pairing_joint_treated, aes(x = P.Value)) + 
   geom_histogram() +
   labs(title = 'Differential gene expression: paired 2000 UI + 4000 UI') +
-  theme(text = element_text(size=12)) +
-  theme_gray()
+  theme_Publication() +
+  theme(panel.grid.major = element_line(colour = "#f0f0f0"),
+        panel.grid.minor = element_line(colour = "#f0f0f0"))
 
 hist2 <- ggplot(topTable_pairing_joint_placebo, aes(x = P.Value)) + 
   geom_histogram() +
   labs(title = 'Differential gene expression: paired placebo') +
-  theme(text = element_text(size=12)) +
-  theme_gray()
-
-ggsave(filename = 'pval_joint_paired_GEx.png', grid.arrange(hist1, hist2, ncol = 1))
+  theme_Publication() +
+  theme(panel.grid.major = element_line(colour = "#f0f0f0"),
+        panel.grid.minor = element_line(colour = "#f0f0f0"))
+hists <- plot_grid(hist1, hist2,
+                   ncol = 1)
+ggsave(filename = 'pval_joint_paired_GEx.svg', hists)
 
 
 # Volcano plots with fold changes:
@@ -1059,6 +1067,8 @@ write.table(array_baseline_4000_and_2000, 'GEx_baseline_4000_and_2000.tsv', sep=
 #The end:
 
 # To save R workspace with all objects to use at a later time:
+# If running neqc tests save as:
+# R_session_saved_image <- 'R_session_saved_image_normalisation_NEQC_diff_exp.RData'
 save.image(file=R_session_saved_image, compress='gzip')
 
 q()
