@@ -443,6 +443,7 @@ dev.off()
 # topTable_fit2_UI4000minus2000minusplacebo
 # topTable_fit2_UI2000minus4000minusplacebo
 
+dev.off()
 hist1 <- ggplot(topTable_fit2_UI4000minusplacebo, aes(x = P.Value)) + 
   geom_histogram() +
   labs(title = 'Differential gene expression: 4000 IU') +
@@ -460,7 +461,7 @@ hist2 <- ggplot(topTable_fit2_UI2000minusplacebo, aes(x = P.Value)) +
 hists <- plot_grid(hist1, hist2,
                    ncol = 1)
 ggsave(filename = 'pval_diff_in_diff_GEx.svg', hists)
-# dev.off()
+
 
 
 # Basic volcano plot

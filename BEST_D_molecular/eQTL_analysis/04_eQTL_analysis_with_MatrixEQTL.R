@@ -272,9 +272,17 @@ me <- Matrix_eQTL_main(
 #############################################
 
 #############################################
-# Plot:
-png(paste('qqplot_', SNP_file, '.png', sep = ''))
-plot(me)
+# Modify plot for publication (SF8):
+# setwd('/Users/antoniob/Documents/quickstart_projects/BEST_D_molecular.p_q/results/repro_re_runs/')
+# load('R_session_saved_image_MatrixQTL_analysis.RData')
+# source('../../code/BEST_D_molecular/utilities/ggtheme.R')
+# library(ggplot2)
+# plot:
+svg(paste('qqplot_', SNP_file, '.svg', sep = ''))
+plot(me, main = '',
+     # cex.main = 1.25,
+     cex.lab = 1.25,
+     cex.axis = 0.75)
 dev.off()
 #############################################
 
