@@ -25,7 +25,7 @@ input_file = as.character(args1)  #'P140343-Results_FinalReport'
 
 input_path = file.path(getwd(), input_file)
 
-output_path = file.path(getwd(), 'missing_genotypes_vs_het_rate.pdf')
+output_path = file.path(getwd(), 'missing_genotypes_vs_het_rate.svg')
 
 #Set ablines standard deviation for heterozygosity rate and for proportion of missing genotypes:
 het_rate_line_sd = as.numeric(3)
@@ -36,7 +36,7 @@ print(paste("standard deviation for heterozygosity rate =", het_rate_line_sd,
             "and proportion of missing genotypes =", missing_genotypes_proportion))
 
 #Read data:
-imiss = read.table(paste(input_path, ".imiss", sep=""), h=T)
+imiss = read.table(paste(input_path, ".imiss", sep=""), h=T, stringsAsFactors = FALSE)
 
 imiss$logF_MISS = log10(imiss[,6])
 
@@ -47,7 +47,8 @@ het$meanHet = (het$N.NM. - het$O.HOM.) / het$N.NM.
 #Plot:
 colors <- densCols(imiss$logF_MISS, het$meanHet)
 
-pdf(output_path)
+#pdf(output_path)
+svg(output_path)
 
 plot(imiss$logF_MISS, het$meanHet, col=colors, xlim=c(-3,0),
      ylim=c(0,0.5), pch=20, xlab="Proportion of missing genotypes",

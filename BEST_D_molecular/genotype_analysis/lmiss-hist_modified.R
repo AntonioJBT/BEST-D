@@ -20,15 +20,15 @@ input_file = as.character(args1)  #'P140343-Results_FinalReport'
 
 input_path = file.path(getwd(), input_file)
 
-output_path = file.path(getwd(), 'missing_variants_lmiss.png')
+output_path = file.path(getwd(), 'missing_variants_lmiss.svg')
 
 # Plot missing variants:
-x = read.table(paste(input_path, '.lmiss', sep=''), header = TRUE)
+x = read.table(paste(input_path, '.lmiss', sep=''), header = TRUE, stringsAsFactors = FALSE)
 
 ylabels=c("0", "20K", "40K", "60K", "80K", "100K")
 xlabels=c("0.0001", "0.001", "0.01", "0.1", "1")
 #par(mfrow=c(1,1))
-png(output_path)
+svg(output_path)
 hist(log10(x$F_MISS),axes=F,xlim=c(-4,0),col="RED",ylab="Number of SNPs",xlab="Fraction of missing data",main="All SNPs",ylim=c(0,100000))
 axis(side=2,labels=F)
 mtext(ylabels,side=2,las=2, at=c(0,20000,40000,60000,80000,100000),line=1)

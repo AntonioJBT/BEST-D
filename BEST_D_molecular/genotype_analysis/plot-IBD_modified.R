@@ -19,7 +19,7 @@ args1 <- commandArgs(trailingOnly = TRUE)
 #Set input and output files:
 input_file = as.character(args1) #'P140343-Results_FinalReport'
 input_path = file.path(getwd(), input_file)
-output_path = file.path(getwd(), 'IBD-plot.pdf')
+output_path = file.path(getwd(), 'IBD-plot.svg')
 IBD_cutoff = as.numeric(0.1875)
 FAILED_IDs_file = file.path(getwd(), 'fail-IBD-check.FAILED_QC')
 
@@ -27,7 +27,7 @@ FAILED_IDs_file = file.path(getwd(), 'fail-IBD-check.FAILED_QC')
 data=read.table(paste(input_path, ".genome", sep=''), h=T)
 
 #Plot:
-pdf(output_path)
+svg(output_path)
 
 hist(data$PI_HAT, ylim=c(0,100), col="RED", breaks=100, 
      xlab="Estimated mean pairwise IBD",main="")

@@ -19,7 +19,7 @@ args1 <- commandArgs(trailingOnly = TRUE)
 #Set input and output files:
 input_file = as.character(args1)  #'P140343-Results_FinalReport.Anderson_hapmap_snps_'
 input_path = file.path(getwd(), input_file)
-output_path = file.path(getwd(), 'pca-ancestry-plot.pdf')
+output_path = file.path(getwd(), 'pca-ancestry-plot.svg')
 divergence_cutoff = as.numeric(0.072)
 FAILED_IDs_file = file.path(getwd(), 'fail-ancestry_divergence-check.FAILED_QC')
 
@@ -39,7 +39,7 @@ JPT=which(data$Group=="5")
 YRI=which(data$Group=="6")
 
 #Plot PCA results:
-pdf(output_path)
+svg(output_path)
 plot(0,0,pch="",xlim=c(-0.1,0.05),ylim=c(-0.05,0.1),xlab="Principal component 1", 
      ylab="Principal component 2")
 
