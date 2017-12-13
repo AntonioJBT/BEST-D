@@ -30,11 +30,12 @@ print(paste('Working directory :', getwd()))
 
 # Read results from 01_microarrayxxx file (saved as RData object):
 # Load a previous R session, data and objects:
-load('../../data/raw/R_session_saved_image_read_and_QC.RData', verbose=T)
-# load('../../data/raw/R_session_saved_image_normalisation_full.RData', verbose=T)
+# load('../../data/raw/R_session_saved_image_read_and_QC_full.RData')
+#load('R_session_saved_image_normalisation_full.RData', verbose=T)
+load('../../data/raw/R_session_saved_image_normalisation_full.RData')
 
 # Filename to save current R session, data and objects at the end:
-R_session_saved_image <- paste('R_session_saved_image_normalisation', '.RData', sep='')
+# R_session_saved_image <- paste('R_session_saved_image_normalisation', '.RData', sep='')
 R_session_saved_image_full <- paste('R_session_saved_image_normalisation_full', '.RData', sep='')
 
 #############################
@@ -65,6 +66,7 @@ library(plyr)
 library(dendextend)
 library(doParallel)
 
+source('../../code/BEST_D_molecular/utilities/ggtheme.R')
 #############################
 
 
@@ -376,10 +378,15 @@ dev.off()
 # Plot using vsn package SD vs row means and modify with ggplot2:
 msd <- meanSdPlot(normalize_VSN$E)
 dev.off()
-msd_plot <- msd$gg + scale_fill_gradient(low = "yellow", high = "darkred") + 
+msd_plot <- msd$gg + 
+  scale_fill_gradient(low = "lightgrey",
+                      high = "black",
+                      name = 'Count') +
   labs(y = 'Standard deviation', x = 'Rank') +
-  theme(text = element_text(size = 12), legend.position="none")
-ggsave('SD_vs_means_normalised_GEx.png', msd_plot)
+  theme_Publication()
+  # theme(legend.position = "none")
+msd_plot
+ggsave('SD_vs_means_normalised_GEx.svg', msd_plot)
 
 msd_neqc <- meanSdPlot(run_neqc$E)
 dev.off()
@@ -416,8 +423,16 @@ plotDensity(normalize_VSN$E, logMode = F, addLegend = F,
 par(mfrow=c(1,1))
 dev.off()
 
-png('density_plot_normalised_VSN.png')
-plotDensity(normalize_VSN$E, logMode = F, addLegend = F, main = '') 
+svg('density_plot_normalised_VSN.svg')
+# https://en.wikibooks.org/wiki/R_Programming/Graphics#Standard_R_graphs
+par(ps = 12, bg = 'transparent')
+plotDensity(normalize_VSN$E,
+            logMode = F,
+            addLegend = F,
+            main = '',
+            ylab = 'Density distribution',
+            xlab = 'Probe intensity (VSN)'
+            ) 
 dev.off()
 
 # TO DO: Turn into parameter set at the beginning of the script .
