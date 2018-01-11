@@ -18,8 +18,7 @@ options(echo = TRUE)
 
 # Working directory:
 # setwd('/ifs/projects/proj043/analysis.dir/eqtl_analysis.dir/')
-# setwd('/Users/antoniob/Desktop/BEST_D_03_MAR.DIR/results_to_share/BEST-D_22_Apr_2016/')
-# setwd('/Users/antoniob/Desktop/BEST_D_03_MAR.DIR/GAT_backgrounds/')
+# setwd('/Users/antoniob/Desktop/BEST_D.DIR/scripts_to_upload/GAT_backgrounds_3/')
 
 #Direct output to file as well as printing to screen (plots aren't redirected though, each done separately). 
 #Input is not echoed to the output file either.
@@ -50,7 +49,8 @@ R_session_saved_image
 ####################
 # Libraries:
 library(XGR)
-
+library(ggplot2)
+library(data.table)
 # Get additional functions needed:
 source('gene_expression_functions.R')
 # source('/ifs/devel/antoniob/projects/BEST-D/gene_expression_functions.R')
@@ -62,11 +62,19 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # Gene or SNP files:
 hits_file <- as.character(args[1])
-# hits_file <- 'eGenes_cis_tx_fdr5_reQTLs_annot_all_Tx_joint_cis.txt'
 # hits_file <- 'Diff_exp_BESTD_FDR10.txt'
+# hits_file <- 'reQTLs_FDR5_cut_genotype_data_all_treated_baseline.tsv_matched.tsv_MxEQTL_p1_1e+06.cis.txt'
+# hits_file <- 'reQTLs_FDR5_trans_covSelect_1e-05_0.001_1e+06_cut_genotype_data_all_treated_baseline.tsv_matched.tsv.txt'
+# Require probe IDs instead (but errors):
+# hits_file <- 'cis_covSelect_1e-05_0.001_1e+06_cut_genotype_data_all_treated_baseline.tsv_matched.tsv'
+# hits_file <- 'cis_covSelect_1e-05_0.001_1e+06_cut_genotype_data_all_treated_final.tsv_matched.tsv'
 
-background_file <- as.character(args[2])
+column_of_interest <- as.integer(args[2])
+# column_of_interest <- 11
+
+background_file <- as.character(args[3])
 # background_file <- 'background_genes_BESTD_expressed.txt'
+# background_file <- 'background_probeID_BESTD_expressed.txt'
 
 # To test enrichment against a particular set
 # annotation_file <- as.character(args[3])
@@ -78,12 +86,15 @@ background_file <- as.character(args[2])
 
 ####################
 # Read data:
-# hits_data <- fread(hits_file, sep = '\t', header = TRUE, stringsAsFactors = FALSE)
-hits_data <- read.csv(hits_file, sep = '\t', header = FALSE, stringsAsFactors = FALSE, strip.white = TRUE)
-hits_data <- as.vector(hits_data$V1)
+hits_data <- fread(hits_file, sep = '\t', header = TRUE, stringsAsFactors = FALSE, strip.white = TRUE)
+# hits_data <- read.csv(hits_file, sep = '\t', header = FALSE, stringsAsFactors = FALSE, strip.white = TRUE)
+hits_data <- as.data.frame(hits_data)
+hits_data <- as.vector(hits_data[, column_of_interest])
 class(hits_data)
 str(hits_data)
-hits_data
+head(hits_data)
+length(hits_data)
+length(unique(hits_data))
 
 background_data <- read.csv(background_file, sep = '\t', header = FALSE, stringsAsFactors = FALSE, strip.white = TRUE)
 background_data <- as.vector(background_data$V1)
@@ -96,47 +107,67 @@ str(background_data)
 ####################
 
 ####################
+# Excluded: "HPMA",
 ontology_terms <- c("GOBP", "GOMF", "GOCC",
-             "PS", "PS2", "SF", "DO", "HPPA", "HPMI", "HPCM", "HPMA", "MP",
+             "PS", "PS2", "SF", "DO", "HPPA", "HPMI", "HPCM", "MP",
              "MsigdbH", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP",
              "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR",
              "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC",
              "MsigdbC6", "MsigdbC7", "DGIdb")
 
+ontology_terms <- c("MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR",
+                    "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC",
+                    "MsigdbC6", "MsigdbC7", "DGIdb")
+
 # Run enrichment analysis and save to file as a loop for all ontology terms:
+# TO DO: continue even if errors:
+
 for (i in ontology_terms){
   ontology_term <- i
   print(ontology_term)
   run_XGR_xEnricherGenes(hits_data, background_data, ontology_term, hits_file)
 }
+####################
 
+####################
+# Concatenate results:
+run_cmd <- sprintf('cat %s*enrichments.txt > XGR_%s.txt', hits_file, hits_file)
+run_cmd
+system(run_cmd)
+####################
+
+####################
 # view enrichment results for the top significant terms
 # View(xEnrichViewer(enrichment_result))
 
-# Visualise the top 10 significant terms in the ontology hierarchy
-# Set an ontology term:
-ontology_term <- 'MsigdbC2CPall'
-
-# Run enrichment analysis for a particular ontology:
-run_XGR_xEnricherGenes(hits_data, background_data, ontology_term, hits_file)
-
-# Load ig.XXX (an object of class "igraph" storing as a directed graph):
-g <- xRDataLoader(RData=sprintf('ig.%s', ontology_term))
-g
-nodes_query <- names(sort(enrichment_result$adjp)[1:10])
-nodes.highlight <- rep("red", length(nodes_query))
-names(nodes.highlight) <- nodes_query
-subg <- dnet::dDAGinduce(g, nodes_query)
-
-# Colour-code terms according to adjusted p-values (taking the form of 10-based negative logarithm):
-png(sprintf("%s_%s_ontology_hierarchy.png", hits_file, ontology_term), width = 12, height = 12, units = 'in', res = 300)
-dnet::visDAG(g=subg, data=-1*log10(enrichment_result$adjp[V(subg)$name]),
-             node.info="both", zlim=c(0,2), node.attrs=list(color=nodes.highlight))
-# color-code terms according to the z-scores
-dnet::visDAG(g=subg, data=enrichment_result$zscore[V(subg)$name], node.info="both",
-             colormap="darkblue-white-darkorange",
-             node.attrs=list(color=nodes.highlight))
-dev.off()
+# # Visualise the top 10 significant terms in the ontology hierarchy
+# # Set an ontology term:
+# ontology_term <- 'MsigdbC2KEGG'
+# 
+# # Run enrichment analysis for a particular ontology:
+# enrichment_result <- run_XGR_xEnricherGenes(hits_data, background_data, ontology_term, hits_file)
+# enrichment_result
+# 
+# # Load ig.XXX (an object of class "igraph" storing as a directed graph):
+# # g <- xRDataLoader(RData=sprintf('ig.%s', ontology_term))
+# g <- xRDataLoader(RData=sprintf('org.Hs.eg%s', ontology_term))
+# g
+# nodes_query <- names(sort(enrichment_result$adjp)[1:10])
+# nodes.highlight <- rep("red", length(nodes_query))
+# names(nodes.highlight) <- nodes_query
+# subg <- dnet::dDAGinduce(g, nodes_query)
+# # TO DO: errors: Error in dnet::dDAGinduce(g, nodes_query) : The function must apply to either 'igraph' or 'graphNEL' object.
+# class(g)
+# 
+# # Colour-code terms according to adjusted p-values (taking the form of 10-based negative logarithm):
+# png(sprintf("%s_%s_ontology_hierarchy.png", hits_file, ontology_term), width = 12, height = 12, units = 'in', res = 300)
+# dnet::visDAG(g=subg, data=-1*log10(enrichment_result$adjp[V(subg)$name]),
+#              node.info="both", zlim=c(0,2), node.attrs=list(color=nodes.highlight))
+# # color-code terms according to the z-scores
+# dnet::visDAG(g=subg, data=enrichment_result$zscore[V(subg)$name], node.info="both",
+#              colormap="darkblue-white-darkorange",
+#              node.attrs=list(color=nodes.highlight))
+# dev.off()
 ####################
 
 ####################
@@ -163,9 +194,6 @@ dev.off()
 # utils::write.table(output_enrichment, file=sprintf("%s_%s_overlap.txt", hits_file, background_file), sep="\t", row.names=FALSE)
 ####################
 
-####################
-
-####################
 
 ####################
 # Run similarity analysis:
