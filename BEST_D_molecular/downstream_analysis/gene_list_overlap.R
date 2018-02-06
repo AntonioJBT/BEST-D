@@ -12,16 +12,16 @@
 ####################
 
 ####################
+options(echo = TRUE)
 ##Set working directory and file locations and names of required inputs:
-
 # Working directory:
 # setwd('/ifs/projects/proj043/analysis.dir/eqtl_analysis.dir/')
-# setwd('/Users/antoniob/Desktop/BEST_D_03_MAR.DIR/GAT_backgrounds/')
+# setwd('Desktop/scripts_to_upload/GAT_backgrounds_2/')
 
 #Direct output to file as well as printing to screen (plots aren't redirected though, each done separately). 
 #Input is not echoed to the output file either.
 
-output_file <- file(paste("R_session_output_",Sys.Date(),".txt", sep=""))
+output_file <- file(paste("R_session_output_", Sys.Date(),".txt", sep=""))
 output_file
 sink(output_file, append=TRUE, split=TRUE, type = c("output", "message"))
 
@@ -52,10 +52,9 @@ R_session_saved_image
 library(GeneOverlap)
 library(data.table)
 library(ggplot2)
-library(RCircos)
 
 # Get additional functions needed:
-source('/Users/antoniob/Desktop/BEST_D_03_MAR.DIR/scripts/gene_expression_functions.R')
+source('gene_expression_functions.R')
 # source('/ifs/devel/antoniob/projects/BEST-D/gene_expression_functions.R')
 ####################
 
@@ -84,6 +83,7 @@ annotation_file <- as.character(args[3])
 # annotation_file <- 'eGenes_BESTD_cis_tx_fdr5_reQTLs_annot.txt'
 # annotation_file <- 'all_treated_baseline_FDR0.05_all_columns.txt'
 # annotation_file <- 'all_treated_final_FDR0.05_all_columns.txt'
+# annotation_file <- 'for_overlap_GO-0071305_cellular_response_to_vitamin_D.txt'
 
 # Ontology term to test against:
 # ontology_term <- as.character(args[3])
@@ -103,7 +103,8 @@ str(background_data)
 head(background_data)
 dim(background_data)
 
-annotation_data <- read.csv(annotation_file, sep = '\t', header = FALSE, stringsAsFactors = FALSE, strip.white = TRUE)
+annotation_data <- read.csv(annotation_file, sep = '\t', header = FALSE, stringsAsFactors = FALSE, strip.white = TRUE,
+                            na.string = c('-', '', ' ', 'NA', 'na'))
 str(annotation_data)
 head(annotation_data)
 dim(annotation_data)
@@ -140,10 +141,14 @@ go.obj
 print(go.obj)
 # Get specific slots of object (ie overlapping gene set):
 head(getIntersection(go.obj))
-# Visualise, erros:
-gom.obj <- newGOM(as.list(hits_data$V1), as.list(annotation_data$V1), spec = "hg19.gene")
-drawHeatmap(gom.obj)
-
+# Visualise, errors:
+# pdf(sprintf('heatmap_overlap_%s_%s_%s.pdf', hits_file, annotation_file, background_file))
+# TO DO, convert to lists:
+# hits_data <- as.list(hits_data$V1)
+# annotation_data <- as.list(annotation_data$V1)
+# gom.obj <- newGOM(hits_data$V1, annotation_data, genome.size = length(background_data[, V1]))
+# drawHeatmap(gom.obj, what = 'odds.ratio')
+# dev.off()
 ####################
 
 ####################
@@ -162,7 +167,14 @@ drawHeatmap(gom.obj)
 
 ####################
 # Write results to disk:
-
+file_name <- sprintf('overlap_%s_VS_%s_ON_%s.txt', hits_file, annotation_file, background_file)
+sink(file_name, append = FALSE, split = TRUE, type = c("output"))
+print(hits_file)
+print(annotation_file)
+print(background_file)
+print(go.obj)
+getIntersection(go.obj)
+sink(file = NULL)
 ####################
 
 ####################
@@ -172,7 +184,7 @@ drawHeatmap(gom.obj)
 #rm(list=ls(arrayQualityMetrics_raw_cleaned, arrayQualityMetrics_preprocessed))
 
 # To save R workspace with all objects to use at a later time:
-save.image(file=R_session_saved_image, compress='gzip')
+# save.image(file=R_session_saved_image, compress='gzip')
 
 #objects_to_save <- (c('normalised_expressed', 'normalised_filtered', 'membership_file_cleaned', 'FAILED_QC_unique'))
 #save(list=objects_to_save, file=R_session_saved_image, compress='gzip')
