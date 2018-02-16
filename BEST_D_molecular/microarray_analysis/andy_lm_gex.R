@@ -6,7 +6,7 @@ head(membership_file_cleaned)
 tail(membership_file_cleaned)
 # kit_id appears once with corresponding pt_id twice (baseline + final visit):
 which(membership_file_cleaned == 104018)
-membership_file_cleaned[c(275, 560), ]
+membership_file_cleaned[which(membership_file_cleaned == 104018), ]
 
 pairing_joint <- factor(membership_file_cleaned$pt_id)
 head(pairing_joint)
