@@ -74,6 +74,7 @@ log(2, 2) # This equals a 2 fold-change
 2^0.32
 2^0.14
 2^4
+2^0.2291402
 
 # Estimate sample size needed:
 power.t.test(
@@ -92,9 +93,20 @@ power.t.test(
   d = NULL,                 # This is delta, not effect size as such, use mean of the log2 fold change (this should correspond to Cohen's d)
   sig.level = 0.05,         # Type I probability
   power = 0.90,             # 1 minus Type II probability
-  type = "two.sample",      # Change for one- or two-sample
+  type = "two.sample",      # Change for one- or two-sample, paired
   alternative = "two.sided",
-  sd = 0.7                  # Include standard deviation, this is arbitrary
+  sd =  0.7                 # Include standard deviation, this is arbitrary
+)
+
+# For paired tests:
+power.t.test(
+n = 100,                  # Observations in _each_ group
+d = NULL,                 # This is delta, not effect size as such, use mean of the log2 fold change (this should correspond to Cohen's d)
+sig.level = 0.05,         # Type I probability
+power = 0.90,             # 1 minus Type II probability
+type = "paired",      # Change for one- or two-sample, paired
+alternative = "two.sided",
+sd = 0.7                  # Include standard deviation, this is arbitrary
 )
 #############################
 
@@ -178,7 +190,7 @@ power.multi(
 
 # Results are the estimated power and the non-centrality parameter 
 
-# power.matched()
+power.matched(ER0 = 1, G0 = 10000, absMu1 = 1.20, sigmad = 2.3, n = 100)
 #############################
 
 
