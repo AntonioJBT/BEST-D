@@ -40,8 +40,9 @@ include *.sh
 include *.txt
 include BEST_D_molecular.ini
 include COPYING
-include Dockerfile
+include holders/Dockerfile
 include tox.ini
+include holders/KNOWN_BUGS
 
 recursive-include BEST_D_molecular *.R
 recursive-include BEST_D_molecular *.Rscript
@@ -56,3 +57,13 @@ recursive-include tests *.data
 recursive-include tests *.gold_std
 recursive-include tests *.py
 recursive-include tests *.yaml
+
+recursive-include holders *.R
+recursive-include holders *.data
+recursive-include holders *.gold_std
+recursive-include holders *.ini
+recursive-include holders *.py
+recursive-include holders *.rst
+recursive-include holders *.sh
+recursive-include holders *.txt
+recursive-include holders *.yaml

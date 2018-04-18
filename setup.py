@@ -19,7 +19,7 @@ standard_library.install_aliases()
 from setuptools import setup
 
 setup(name='BEST-D molecular analysis code',
-      version='0.1',
+      version='0.2',
       description='Code used in the BEST-D molecular analysis paper',
       url='https://github.com/AntonioJBT/BEST_D',
       author='Antonio J Berlanga-Taylor',
