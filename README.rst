@@ -10,7 +10,7 @@
     :alt: Documentation Status
 
 ################################################
-Project BEST-D molecular analysis
+BEST-D molecular analysis
 ################################################
 
 
