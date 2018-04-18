@@ -23,7 +23,7 @@ Project BEST-D molecular analysis
 
 This repository has the code for the BEST-D molecular analysis paper.
 
-Manuscript:
+Manuscript (in press version):
 
 `Genomic Response to Vitamin D Supplementation in the Setting of a Randomized, Placebo-Controlled Trial`__
 
