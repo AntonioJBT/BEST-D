@@ -21,6 +21,20 @@ Project BEST-D molecular analysis
     http://tom.preston-werner.com/2010/08/23/readme-driven-development.html
 
 
-This repository has the code for the BEST-D molecular analysis paper.
+This repository has the code for the BEST-D molecular analysis paper. Manuscript and related publications:
 
+`Genomic Response to Vitamin D Supplementation in the Setting of a Randomized, Placebo-Controlled Trial`__
 
+.. __: https://www.sciencedirect.com/science/article/pii/S2352396418301385#!
+
+`Effects of Vitamin D on Blood Pressure, Arterial Stiffness, and Cardiac Function in Older People After 1 Year: BEST-D (Biochemical Efficacy and Safety Trial of Vitamin D).`__
+
+.. __: https://www.ncbi.nlm.nih.gov/pubmed/29066437
+
+`Optimum dose of vitamin D for disease prevention in older people: BEST-D trial of vitamin D in primary care.`__
+
+.. __: https://www.ncbi.nlm.nih.gov/pubmed/27986983
+
+`Estimation of the optimum dose of vitamin D for disease prevention in older people: rationale, design and baseline characteristics of the BEST-D trial.`__
+
+.. __: https://www.ncbi.nlm.nih.gov/pubmed/25721698
